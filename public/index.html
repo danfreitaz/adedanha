@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adedanha32 — irc.arcadia.net</title>
+<meta name="description" content="Adedanha (Stop!) multiplayer no navegador, com cara de mIRC dos anos 90. Sem login, salas públicas.">
+<meta name="theme-color" content="#008080">
+<link rel="icon" id="favicon">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="desktop">
+  <div class="win main" id="main">
+    <div class="titlebar">
+      <span class="ico" data-icon="logo"></span>
+      <span class="title" id="mainTitle">Adedanha32 - [Status: irc.arcadia.net]</span>
+      <span class="tb-btns"><button class="tbtn" aria-hidden="true" tabindex="-1">_</button><button class="tbtn" aria-hidden="true" tabindex="-1">□</button><button class="tbtn" id="btnX" title="Sair do canal">×</button></span>
+    </div>
+    <div class="menubar">
+      <span><u>A</u>rquivo</span><span><u>V</u>er</span><span><u>F</u>erramentas</span><span><u>C</u>omandos</span><span><u>J</u>anela</span><span class="menu-help"><u>A</u>juda</span>
+    </div>
+    <div class="toolbar">
+      <button class="tool" id="tConnect" title="Conectar / Lista de canais"><span data-icon="plug"></span></button>
+      <button class="tool" id="tList" title="Lista de canais"><span data-icon="list"></span></button>
+      <span class="sep"></span>
+      <button class="tool" id="tShare" title="Copiar link do canal"><span data-icon="link"></span></button>
+      <button class="tool" id="tSound" title="Som liga/desliga"><span data-icon="speaker"></span></button>
+      <span class="sep"></span>
+      <button class="tool" id="tHelp" title="Como jogar"><span data-icon="help"></span></button>
+      <span class="tool-flex"></span>
+      <span class="clock" id="clock">00:00</span>
+    </div>
+
+    <div class="mdi" id="mdi">
+      <!-- LOBBY -->
+      <section class="win child" id="lobby" hidden>
+        <div class="titlebar inner"><span class="ico" data-icon="list"></span><span class="title">Lista de Canais — irc.arcadia.net</span></div>
+        <div class="lobby-body">
+          <div class="pane">
+            <div class="motd field">
+<pre id="motd" class="ascii">   _      _        _           _
+  /_\  __| |___ __| |__ _ _ _ | |_  __ _
+ / _ \/ _` / -_) _` / _` | &#x27; \| &#x27; \/ _` |
+/_/ \_\__,_\___\__,_\__,_|_||_|_||_\__,_|
+</pre>
+<p class="motd-txt">*** Bem-vindo ao servidor <b>irc.arcadia.net</b><br>*** Sorteie a letra, preencha tudo, grite <b class="red">STOP!</b><br>*** Sem login. Só um nick e coragem.</p>
+            </div>
+            <label class="row">Nick: <input class="field" id="nick" maxlength="16" placeholder="SeuNick" autocomplete="off" spellcheck="false"></label>
+            <div class="list-head"><span>Canal</span><span>Usuários</span><span>Status</span></div>
+            <div class="field listbox" id="roomList"><div class="empty">Procurando canais…</div></div>
+            <div class="row right"><button class="btn" id="btnRefresh"><span data-icon="refresh"></span> Atualizar</button><button class="btn" id="btnJoinCode">Entrar com código…</button></div>
+          </div>
+          <div class="pane">
+            <fieldset class="group">
+              <legend>Criar canal</legend>
+              <label class="row">Canal: <span class="hash">#</span><input class="field" id="newName" maxlength="24" placeholder="taverna" spellcheck="false"></label>
+              <p class="hint">O canal fica público na lista enquanto tiver gente. Você vira o operador <b>@</b> e escolhe as regras lá dentro.</p>
+              <div class="row right"><button class="btn primary" id="btnCreate"><span data-icon="plus"></span> Criar e entrar</button></div>
+            </fieldset>
+            <fieldset class="group">
+              <legend>Regras rápidas</legend>
+              <ul class="rules">
+                <li><span data-icon="dice"></span> Uma letra é sorteada.</li>
+                <li><span data-icon="pencil"></span> Preencha cada categoria com ela.</li>
+                <li><span data-icon="stop"></span> Completou tudo? Grite STOP!</li>
+                <li><span data-icon="book"></span> O dicionário confere; vocês contestam.</li>
+                <li><span data-icon="trophy"></span> Única = 10 · repetida = 5 · inválida = 0</li>
+              </ul>
+            </fieldset>
+          </div>
+        </div>
+      </section>
+
+      <!-- SALA -->
+      <section class="win child" id="room" hidden>
+        <div class="titlebar inner"><span class="ico" data-icon="chat"></span><span class="title" id="roomTitle">#canal</span></div>
+        <div class="room-body">
+          <div class="game field" id="game"></div>
+          <aside class="nicks field" id="nicks"></aside>
+          <div class="chat">
+            <div class="log field" id="log"></div>
+            <form class="inputline" id="chatForm" autocomplete="off">
+              <input class="field" id="chatInput" maxlength="300" placeholder="Digite aqui… (/me, /nick, /help)" spellcheck="false">
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="statusbar">
+      <span class="sb field" id="sbConn">Desconectado</span>
+      <span class="sb field" id="sbLag">Lag: —</span>
+      <span class="sb field grow" id="sbInfo">Pronto.</span>
+    </div>
+  </div>
+</div>
+
+<!-- Diálogo genérico -->
+<div class="modal" id="modal" hidden>
+  <div class="win dialog">
+    <div class="titlebar"><span class="ico" data-icon="logo"></span><span class="title" id="dlgTitle">Adedanha32</span><span class="tb-btns"><button class="tbtn" data-close>×</button></span></div>
+    <div class="dlg-body"><span class="dlg-ico" id="dlgIco" data-icon="info"></span><div id="dlgBody"></div></div>
+    <div class="dlg-btns" id="dlgBtns"></div>
+  </div>
+</div>
+
+<div class="stopflash" id="stopflash" hidden><span>STOP!</span></div>
+<script src="/icons.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

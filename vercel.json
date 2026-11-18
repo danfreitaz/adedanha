@@ -1,0 +1,4 @@
+{
+  "functions": { "api/game.js": { "includeFiles": "data/**", "memory": 1024, "maxDuration": 10 } },
+  "rewrites": [{ "source": "/", "destination": "/index.html" }]
+}
